@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios'
 import { Redirect, Route } from 'react-router-dom';
 import {
   IonApp,
@@ -12,8 +13,8 @@ import {
 import { IonReactRouter } from '@ionic/react-router';
 import { ellipse, square, triangle } from 'ionicons/icons';
 import Tab1 from './pages/Tab1';
-import Tab2 from './pages/Tab2';
-import Tab3 from './pages/Tab3';
+import AllReceipts from './pages/AllReceipts';
+import AddReceipt from './pages/AddReceipt';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -33,34 +34,54 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
+import { Receipt } from './common/constants';
 
-const App: React.FC = () => (
+const App: React.FC = () => {
+  const [receipts, setReceipts] = React.useState<Receipt[]>([])
+
+  const fetchResources = async (url: string) => {
+    try { 
+      const response = await axios.get(url)
+      setReceipts(response.data)
+    } catch (error) { 
+      alert(`there was an error`)
+      console.log(error)
+    }
+  }
+
+
+  React.useEffect(() => {
+    fetchResources(`${process.env.REACT_APP_BASE_SERVER_URL}/receipts`)
+  }, [])
+  
+  return (
   <IonApp>
     <IonReactRouter>
       <IonTabs>
         <IonRouterOutlet>
-          <Route path="/tab1" component={Tab1} exact={true} />
-          <Route path="/tab2" component={Tab2} exact={true} />
-          <Route path="/tab3" component={Tab3} />
-          <Route path="/" render={() => <Redirect to="/tab1" />} exact={true} />
+          <Route path="/totals" component={Tab1} exact={true} />
+          <Route path="/all" component={() => <AllReceipts receipts={receipts}/>} exact={true} />
+          <Route path="/add" component={AddReceipt} />
+          <Route path="/" render={() => <Redirect to="/totals" />} exact={true} />
         </IonRouterOutlet>
         <IonTabBar slot="bottom">
-          <IonTabButton tab="tab1" href="/tab1">
+          <IonTabButton tab="tab1" href="/totals">
             <IonIcon icon={triangle} />
-            <IonLabel>Tab 1</IonLabel>
+            <IonLabel>View Totals</IonLabel>
           </IonTabButton>
-          <IonTabButton tab="tab2" href="/tab2">
+          <IonTabButton tab="tab2" onClick={() => fetchResources(`${process.env.REACT_APP_BASE_SERVER_URL}/receipts`)} href="/all">
             <IonIcon icon={ellipse} />
-            <IonLabel>Tab 2</IonLabel>
+            <IonLabel>All Receipts</IonLabel>
           </IonTabButton>
-          <IonTabButton tab="tab3" href="/tab3">
+          <IonTabButton tab="tab3" href="/add">
             <IonIcon icon={square} />
-            <IonLabel>Tab 3</IonLabel>
+            <IonLabel>Add Receipt</IonLabel>
           </IonTabButton>
         </IonTabBar>
       </IonTabs>
     </IonReactRouter>
   </IonApp>
-);
+)
+        };
 
 export default App;
