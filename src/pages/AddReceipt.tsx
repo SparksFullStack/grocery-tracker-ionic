@@ -1,5 +1,5 @@
 import React from 'react';
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonList, IonItemDivider, IonItem, IonInput, IonSelect, IonSelectOption, IonButton } from '@ionic/react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonList, IonItemDivider, IonItem, IonInput, IonSelect, IonSelectOption, IonButton, IonToast } from '@ionic/react';
 import './AddReceipt.css';
 import { People, Month, Receipt } from '../common/constants';
 import axios from 'axios';
@@ -11,6 +11,8 @@ const AddReceipt: React.FC = () => {
   const [month, setMonth] = React.useState<Month>()
   const [year, setYear] = React.useState<number>(2020)
   const [additionalInfo, setAdditionalInfo] = React.useState<string>('')
+  const [postError, setPostError] = React.useState<boolean>(false)
+  const [postSuccess, setPostSuccess] = React.useState<boolean>(false)
 
   const submitReceipt = async () => {
     const newReceipt: Receipt = {
@@ -22,15 +24,33 @@ const AddReceipt: React.FC = () => {
     }
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BASE_SERVER_URL}/receipts`, newReceipt)
-      console.log('post response', response)
+      await axios.post(`${process.env.REACT_APP_BASE_SERVER_URL}/receipts`, newReceipt)
+      setPostError(false)
+      setPostSuccess(true)
+      setTimeout(() => setPostSuccess(false), 4500)
     } catch (error) {
-      alert("There was an error saving the receipt--go bug Charlie!")
+      setPostSuccess(false)
+      setPostError(true)
+      setTimeout(() => setPostError(false), 4500)
     }
   }
 
   return (
     <IonPage>
+      <IonToast
+        isOpen={postError}
+        color="warning"
+        onDidDismiss={() => setPostError(false)}
+        message="There was an error saving the receipt--go bug Charlie!"
+        duration={2500}
+      />
+      <IonToast
+        isOpen={postSuccess}
+        color="success"
+        onDidDismiss={() => setPostSuccess(false)}
+        message="Receipt was saved!"
+        duration={2500}
+      />
       <IonHeader>
         <IonToolbar>
           <IonTitle>Add a Receipt</IonTitle>
