@@ -35,6 +35,7 @@ import '@ionic/react/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 import { Receipt } from './common/constants';
+import ViewReceipt from './pages/ViewReceipt';
 
 const App: React.FC = () => {
   const [receipts, setReceipts] = React.useState<Receipt[]>([])
@@ -62,6 +63,7 @@ const App: React.FC = () => {
           <Route path="/totals" component={Tab1} exact={true} />
           <Route path="/all" component={() => <AllReceipts receipts={receipts}/>} exact={true} />
           <Route path="/add" component={AddReceipt} />
+          <Route path="/view/:receiptId" component={() => <ViewReceipt receipts={receipts}/>} />
           <Route path="/" render={() => <Redirect to="/totals" />} exact={true} />
         </IonRouterOutlet>
         <IonTabBar slot="bottom">

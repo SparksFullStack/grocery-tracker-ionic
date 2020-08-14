@@ -20,10 +20,25 @@ export enum Month {
 }
 
 export type Receipt = {
+    _id?: string,
     name: string,
     submittedBy: People,
     amount: string,
     month: Month,
     year: number,
     additionalInfo?: string
+}
+
+
+export const formatName = (name: People): string => {
+   switch (name) {
+        case People.BETTY:
+            return "Betty"
+        case People.CHARLIE:
+            return "Charlie"
+        case People.SUZANNE_AND_LOWELL:
+            return "Suzanne and Lowell"
+        default: 
+            return name
+    }
 }
